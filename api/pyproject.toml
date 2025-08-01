@@ -8,14 +8,31 @@ authors = [
 dependencies = [
     "fastapi==0.109.2",
     "uvicorn[standard]==0.27.1",
-    "pydantic==2.6.1",
-    "pydantic-settings==2.1.0",
+    "pydantic>=2.7.4,<3.0.0",
+    "pydantic-settings>=2.4.0,<3.0.0",
     "python-dotenv==1.0.1",
     "sqlalchemy==2.0.27",
     "alembic==1.13.1",
     "mangum==0.17.0",
+    "langchain-pymupdf4llm>=0.4.1",
+    "python-multipart>=0.0.20",
+    "langchain-openai>=0.3.0",
+    "langchain-community>=0.3.0",
+    "langchain-core>=0.3.0",
+    "langchain>=0.3.0",
+    "langgraph>=0.2.0",
+    "langchain-qdrant>=0.2.0",
+    "qdrant-client>=1.10.0",
+    "langchain-text-splitters>=0.3.0",
+    "pypdf>=4.0.0",
+    "aiofiles>=23.1.0",
+    "tavily-python>=0.3.0",
+    "langsmith",
+    "ragas>=0.3.0",
+    "Pillow>=9.0.0",
+    "rapidfuzz>=3.13.0",
 ]
-requires-python = ">=3.9"
+requires-python = ">=3.11,<3.14"
 
 [project.optional-dependencies]
 dev = [
@@ -26,4 +43,8 @@ dev = [
     "isort==5.13.2",
     "flake8==7.0.0",
     "mypy==1.8.0",
+    "jupyter>=1.1.1",
+    "ipykernel>=6.30.0",
 ]
+
+
