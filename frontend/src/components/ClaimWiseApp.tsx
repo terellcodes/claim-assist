@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Navigation from './Navigation'
 import PolicyUpload from './PolicyUpload'
 import ClaimForm from './ClaimForm'
 import EvaluationResults from './EvaluationResults'
@@ -66,6 +67,12 @@ export default function ClaimWiseApp() {
     setIsFormEditable(false)
   }
 
+  const handleTryNow = () => {
+    // Reset to beginning and scroll to top
+    handleStartOver()
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const handleToggleForm = () => {
     setIsFormCollapsed(!isFormCollapsed)
   }
@@ -82,12 +89,13 @@ export default function ClaimWiseApp() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
-      <div className="container mx-auto px-4 py-8">
+      {/* Navigation Bar */}
+      <Navigation onTryNow={handleTryNow} />
+      
+      {/* Main Content - adjusted for fixed navigation */}
+      <div className="container mx-auto px-4 pt-24 pb-8">
         {/* Header */}
         <header className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            ClaimWise
-          </h1>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             AI-powered insurance claim evaluation and professional email drafting
           </p>
