@@ -29,4 +29,10 @@ export const API_BASE_URL = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
     HEALTH: `${API_BASE_URL}/health`,
+    POLICIES: {
+        UPLOAD: `${API_BASE_URL}/api/v1/policies/upload`,
+    },
+    CLAIMS: {
+        SUBMIT: `${API_BASE_URL}/api/v1/claims/submit`,
+    },
 } as const; 
