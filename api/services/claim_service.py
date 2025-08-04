@@ -52,18 +52,18 @@ class ClaimService:
         try:
             result = self.agent.evaluate_claim(formatted_claim, claim_request.policy_id)
             
-            # Parse agent response to determine status
-            evaluation = result.get("response", "")
-            claim_status = self._determine_claim_status(evaluation)
+            # Agent now returns structured data - use it directly
+            is_valid = result.get("is_valid", False)
+            claim_status = "valid" if is_valid else "invalid"
+            evaluation = result.get("evaluation", "")
+            email_draft = result.get("email_draft")
+            suggestions = result.get("suggestions")
             
-            # Extract email draft or suggestions
-            email_draft = None
-            suggestions = None
-            
-            if claim_status == "valid":
-                email_draft = self._extract_email_draft(evaluation)
-            else:
-                suggestions = self._extract_suggestions(evaluation)
+            # Ensure suggestions is a list (convert string to list if needed)
+            if isinstance(suggestions, str) and suggestions:
+                suggestions = [suggestions]
+            elif not suggestions:
+                suggestions = None
             
             return ClaimResponse(
                 policy_id=claim_request.policy_id,
@@ -94,42 +94,6 @@ Description: {claim_request.description}
 I would like to file a claim under my insurance policy and need help determining if this claim is valid based on my policy terms.
         """.strip()
     
-    def _determine_claim_status(self, evaluation: str) -> str:
-        """Simple logic to determine claim status from agent response."""
-        eval_lower = evaluation.lower()
-        
-        if any(word in eval_lower for word in ["valid", "covered", "approved", "eligible"]):
-            return "valid"
-        elif any(word in eval_lower for word in ["invalid", "not covered", "excluded", "denied"]):
-            return "invalid"
-        else:
-            return "needs_review"
-    
-    def _extract_email_draft(self, evaluation: str) -> str:
-        """Extract email draft from agent response (simple approach)."""
-        # Look for email sections in the response
-        lines = evaluation.split('\n')
-        email_started = False
-        email_lines = []
-        
-        for line in lines:
-            if any(keyword in line.lower() for keyword in ["subject:", "dear", "email", "draft"]):
-                email_started = True
-            
-            if email_started:
-                email_lines.append(line)
-                
-            # Stop if we hit the end marker
-            if email_started and "best regards" in line.lower():
-                break
-        
-        return '\n'.join(email_lines) if email_lines else evaluation
-    
-    def _extract_suggestions(self, evaluation: str) -> str:
-        """Extract suggestions from agent response."""
-        # For now, just return the full evaluation as suggestions
-        # Could be enhanced to parse specific suggestion sections
-        return evaluation
 
 
 # Global service instance

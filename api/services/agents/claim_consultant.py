@@ -70,9 +70,23 @@ Your job is to evaluate whether a user's insurance claim is valid, based on the 
 2. **Query the Insurance Policy using the RAG Search tool** to find clauses that mention covered perils, exclusions, and conditions.
 3. **Determine if the claim is valid or not.** Base your decision primarily on what the policy says.
 4. If necessary, **use the Web Search tool** to clarify any uncertain facts or explain why a technical detail supports or weakens the claim.
-5. **Generate a response to the user:**
-   - If the claim is valid: write a professional email the user can send to their insurance company, referencing relevant clauses.
-   - If the claim is not valid: explain why not, and give clear, actionable suggestions on what the user can do to strengthen or reframe the claim.
+5. **Return your response in JSON format with these exact fields:**
+
+```json
+{
+  "is_valid": true/false,
+  "evaluation": "Detailed explanation of your analysis and reasoning",
+  "email_draft": "Professional email to send to insurance company (only if is_valid is true)",
+  "suggestions": "Actionable suggestions for the user (especially if is_valid is false)"
+}
+```
+
+**IMPORTANT**: You must ALWAYS return a valid JSON response with these exact field names. 
+- Set "is_valid" to true only if you are confident the claim should be covered based on the policy
+- Set "is_valid" to false if the claim is excluded, not covered, or you have significant doubts
+- Always provide a detailed "evaluation" explaining your reasoning
+- Only include "email_draft" if is_valid is true
+- Always provide helpful "suggestions" for the user
 
 Always ground your decision in the uploaded policy first, and be concise, helpful, and accurate.
 """
@@ -144,8 +158,10 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
             policy_id: ID of the uploaded policy
             
         Returns:
-            Dictionary with evaluation results
+            Dictionary with structured evaluation results
         """
+        import json
+        
         # Add RAG tool for this policy
         self.add_rag_tool(policy_id)
         
@@ -164,11 +180,42 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         else:
             response_content = str(final_message)
         
-        return {
-            "response": response_content,
-            "policy_id": policy_id,
-            "status": "completed"
-        }
+        # Parse JSON response from LLM
+        try:
+            # Clean up the response (remove markdown code blocks if present)
+            cleaned_response = response_content.strip()
+            if cleaned_response.startswith('```json'):
+                cleaned_response = cleaned_response[7:]
+            if cleaned_response.endswith('```'):
+                cleaned_response = cleaned_response[:-3]
+            cleaned_response = cleaned_response.strip()
+            
+            # Parse JSON
+            parsed_response = json.loads(cleaned_response)
+            
+            # Validate required fields
+            if not isinstance(parsed_response.get('is_valid'), bool):
+                raise ValueError("is_valid field must be a boolean")
+            
+            return {
+                "is_valid": parsed_response["is_valid"],
+                "evaluation": parsed_response.get("evaluation", ""),
+                "email_draft": parsed_response.get("email_draft"),
+                "suggestions": parsed_response.get("suggestions"),
+                "policy_id": policy_id,
+                "status": "completed"
+            }
+            
+        except (json.JSONDecodeError, ValueError, KeyError) as e:
+            # Fallback: if JSON parsing fails, treat as unstructured response
+            return {
+                "is_valid": False,  # Default to invalid if we can't parse
+                "evaluation": f"Error parsing agent response: {str(e)}\n\nRaw response: {response_content}",
+                "email_draft": None,
+                "suggestions": "Please try submitting your claim again.",
+                "policy_id": policy_id,
+                "status": "error"
+            }
 
 
 # Global instance - lazy initialization to avoid API key issues at import time

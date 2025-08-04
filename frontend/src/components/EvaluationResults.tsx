@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import ReactMarkdown from 'react-markdown'
 import { PolicyMetadata, ClaimEvaluation } from './ClaimWiseApp'
 
 interface EvaluationResultsProps {
@@ -119,10 +120,10 @@ export default function EvaluationResults({ evaluation, policyMetadata, onStartO
             {copiedEvaluation ? 'Copied!' : 'Copy'}
           </button>
         </div>
-        <div className="prose max-w-none">
-          <div className="whitespace-pre-wrap text-gray-700 leading-relaxed">
+        <div className="prose max-w-none prose-headings:text-black prose-p:text-black prose-strong:text-black prose-ul:text-black prose-ol:text-black prose-li:text-black text-black">
+          <ReactMarkdown>
             {evaluation.evaluation}
-          </div>
+          </ReactMarkdown>
         </div>
       </div>
 
