@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ClaimAssist is a full-stack application with separate API and frontend services:
 
+### Developer Preferences
+- Only commit changes when I tell you to.
+- Just because I tell you to commit changes once that does not mean you can freely start doing so for future changes
+- if you start the frontend and api for testing please kill them when you hand control back to me
+
 ### API (FastAPI Backend)
 - **Location**: `api/` directory
 - **Framework**: FastAPI with Pydantic for data validation

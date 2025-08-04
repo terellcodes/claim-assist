@@ -12,7 +12,6 @@ from typing import List, Dict, Any, Tuple
 import tempfile
 import os
 import uuid
-import hashlib
 
 
 class SimpleDocumentProcessor:
@@ -29,25 +28,25 @@ class SimpleDocumentProcessor:
     
     def generate_policy_id(self, pdf_content: bytes, filename: str = None) -> str:
         """
-        Generate a unique policy ID based on PDF content and filename.
-        Uses content hash for consistency - same PDF will get same ID.
+        Generate a unique policy ID for each upload.
+        Always creates a unique ID, allowing multiple uploads of the same PDF.
         
         Args:
             pdf_content: Raw PDF bytes
-            filename: Optional filename for additional uniqueness
+            filename: Optional filename for readability
             
         Returns:
             Unique policy ID string
         """
-        # Create hash of PDF content for consistency
-        content_hash = hashlib.md5(pdf_content).hexdigest()[:8]
+        # Always generate a unique UUID for each upload
+        unique_id = str(uuid.uuid4())[:8]
         
-        # Add filename component if provided
+        # Add filename component if provided for readability
         if filename:
             filename_clean = filename.replace('.pdf', '').replace(' ', '_')[:10]
-            return f"policy_{filename_clean}_{content_hash}"
+            return f"policy_{filename_clean}_{unique_id}"
         else:
-            return f"policy_{content_hash}_{str(uuid.uuid4())[:8]}"
+            return f"policy_{unique_id}"
     
     def process_pdf_with_id(self, pdf_content: bytes, filename: str = None) -> Tuple[str, List[Document], Dict[str, Any]]:
         """
