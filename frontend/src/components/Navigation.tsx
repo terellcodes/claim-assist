@@ -10,7 +10,7 @@ export default function Navigation({ onTryNow }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleGitHubClick = () => {
-    window.open('https://github.com/terellcodes/claim-mate', '_blank')
+    window.open('https://github.com/terellcodes/claim-assist', '_blank')
     setIsMobileMenuOpen(false)
   }
 
