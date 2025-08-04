@@ -1,8 +1,8 @@
-# ClaimMate 🏥📋
+# ClaimAssist 🏥📋
 
 > **AI-Powered Insurance Claim Evaluation & Professional Email Drafting**
 
-ClaimMate is an intelligent insurance claim processing application that combines AI-powered policy analysis with professional claim drafting. Upload your insurance policy, describe your claim situation, and receive an expert evaluation with a professionally drafted email ready to send to your insurance company.
+ClaimAssist is an intelligent insurance claim processing application that combines AI-powered policy analysis with professional claim drafting. Upload your insurance policy, describe your claim situation, and receive an expert evaluation with a professionally drafted email ready to send to your insurance company.
 
 ## 🚀 Features
 
@@ -17,7 +17,7 @@ ClaimMate is an intelligent insurance claim processing application that combines
 
 ### System Overview
 
-ClaimMate follows a modern microservices architecture with AI agent orchestration:
+ClaimAssist follows a modern microservices architecture with AI agent orchestration:
 
 ```
 ┌─────────────────┐    ┌──────────────────┐    ┌─────────────────┐
@@ -69,7 +69,7 @@ claim-mate/
 │   │   │   ├── layout.tsx          # Root layout
 │   │   │   └── page.tsx            # Home page
 │   │   ├── components/             # React components
-│   │   │   ├── ClaimWiseApp.tsx    # Main application component
+│   │   │   ├── ClaimAssistApp.tsx    # Main application component
 │   │   │   ├── PolicyUpload.tsx    # PDF upload & processing
 │   │   │   ├── ClaimForm.tsx       # Claim details form
 │   │   │   └── EvaluationResults.tsx # Results display
@@ -388,4 +388,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ---
 
-**⚠️ Important Notice**: ClaimMate provides AI-assisted claim analysis for informational purposes only. Always consult with insurance professionals and carefully review your policy terms before submitting actual claims. 
+**⚠️ Important Notice**: ClaimAssist provides AI-assisted claim analysis for informational purposes only. Always consult with insurance professionals and carefully review your policy terms before submitting actual claims. 

@@ -97,7 +97,7 @@ async def test_claim_submission(policy_id: str):
 
 async def main():
     """Run the tests."""
-    print("🚀 Testing ClaimWise API")
+    print("🚀 Testing ClaimAssist API")
     print("=" * 50)
     
     # Test policy upload

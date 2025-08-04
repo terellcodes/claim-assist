@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
-import { PolicyMetadata, ClaimEvaluation } from './ClaimWiseApp'
+import { PolicyMetadata, ClaimEvaluation } from './ClaimAssistApp'
 
 interface EvaluationResultsProps {
   evaluation: ClaimEvaluation

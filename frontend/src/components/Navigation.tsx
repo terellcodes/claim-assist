@@ -10,7 +10,7 @@ export default function Navigation({ onTryNow }: NavigationProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
   const handleGitHubClick = () => {
-    window.open('https://github.com/your-username/claim-mate', '_blank')
+    window.open('https://github.com/terellcodes/claim-mate', '_blank')
     setIsMobileMenuOpen(false)
   }
 
@@ -35,7 +35,7 @@ export default function Navigation({ onTryNow }: NavigationProps) {
           {/* Left side - App name */}
           <div className="flex items-center space-x-2">
             <div className="text-2xl font-bold text-gray-900">
-              ClaimMate
+              ClaimAssist
             </div>
             <div className="hidden sm:block text-sm text-gray-500">
               🏥📋

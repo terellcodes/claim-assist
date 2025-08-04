@@ -14,5 +14,5 @@ async def health_check():
     return {
         "status": ResponseMessage.SUCCESS,
         "code": StatusCode.HTTP_200_OK,
-        "message": "ClaimWise API is healthy"
+        "message": "ClaimAssist API is healthy"
     }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import { API_ENDPOINTS, logger } from '@/config/api'
-import { PolicyMetadata, ClaimEvaluation } from './ClaimWiseApp'
+import { PolicyMetadata, ClaimEvaluation } from './ClaimAssistApp'
 
 interface FormData {
   policy_holder_name: string

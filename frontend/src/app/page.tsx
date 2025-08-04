@@ -1,5 +1,5 @@
-import ClaimWiseApp from "@/components/ClaimWiseApp";
+import ClaimAssistApp from "@/components/ClaimAssistApp";
 
 export default function Home() {
-  return <ClaimWiseApp />;
+  return <ClaimAssistApp />;
 }

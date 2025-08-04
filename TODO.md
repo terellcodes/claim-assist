@@ -12,7 +12,7 @@ The notebook describes two different approaches to implement the agent. Please u
 
 ### A: Top Menu Bar
 - Includes:
-  - App Logo: ClaimWise
+  - App Logo: ClaimAssist
   - Navigation Links:
     - API Docs
     - GitHub

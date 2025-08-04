@@ -105,7 +105,7 @@ def test_openai_connection():
 
 def main():
     """Run all environment tests."""
-    print("🚀 ClaimWise Environment Configuration Test")
+    print("🚀 ClaimAssist Environment Configuration Test")
     print("=" * 50)
     
     tests = [

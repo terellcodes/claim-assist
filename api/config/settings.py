@@ -5,7 +5,7 @@ from functools import lru_cache
 
 class Settings(BaseSettings):
     # Application Settings
-    APP_NAME: str = "ClaimWise API"
+    APP_NAME: str = "ClaimAssist API"
     APP_DESCRIPTION: str = "AI-powered insurance claim evaluation and drafting service"
     APP_VERSION: str = "1.0.0"
     DEBUG: bool = False
@@ -17,7 +17,7 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: Optional[str] = None
     TAVILY_API_KEY: Optional[str] = None
     LANGCHAIN_TRACING_V2: str = "false"
-    LANGCHAIN_PROJECT: str = "ClaimWise"
+    LANGCHAIN_PROJECT: str = "ClaimAssist"
     LANGSMITH_API_KEY: Optional[str] = None
     
     # CORS Settings

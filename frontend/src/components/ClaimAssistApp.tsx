@@ -28,7 +28,7 @@ export interface ClaimEvaluation {
 
 type AppStep = 'upload' | 'claim' | 'results'
 
-export default function ClaimWiseApp() {
+export default function ClaimAssistApp() {
   const [currentStep, setCurrentStep] = useState<AppStep>('upload')
   const [policyMetadata, setPolicyMetadata] = useState<PolicyMetadata | null>(null)
   const [claimEvaluation, setClaimEvaluation] = useState<ClaimEvaluation | null>(null)

@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "ClaimMate",
-  description: "ClaimMate - AI-powered insurance claim evaluation and professional email drafting",
+  title: "ClaimAssist",
+  description: "ClaimAssist - AI-powered insurance claim evaluation and professional email drafting",
 };
 
 export default function RootLayout({

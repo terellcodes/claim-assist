@@ -163,7 +163,7 @@ def test_actual_pdf():
 
 def main():
     """Run all basic tests."""
-    print("🚀 Basic ClaimWise API Tests")
+    print("🚀 Basic ClaimAssist API Tests")
     print("=" * 50)
     
     tests = [

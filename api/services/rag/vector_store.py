@@ -1,7 +1,7 @@
 """
 Simple Vector Store Setup
 
-Basic Qdrant integration with namespace support for ClaimWise.
+Basic Qdrant integration with namespace support for ClaimAssist.
 Keeps it simple - no complex features yet.
 """
 

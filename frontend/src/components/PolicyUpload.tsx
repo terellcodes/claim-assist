@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react'
 import { API_ENDPOINTS, logger } from '@/config/api'
-import { PolicyMetadata } from './ClaimWiseApp'
+import { PolicyMetadata } from './ClaimAssistApp'
 
 interface PolicyUploadProps {
   onPolicyUploaded: (metadata: PolicyMetadata) => void

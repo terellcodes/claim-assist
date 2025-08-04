@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events.
     """
     # Startup
-    print("🚀 Starting ClaimWise API...")
+    print("🚀 Starting ClaimAssist API...")
     
     # Configure environment variables
     configure_environment()
@@ -65,11 +65,11 @@ async def lifespan(app: FastAPI):
         if not get_settings().is_development:
             raise  # Fail in production, but allow development to continue
     
-    print("✅ ClaimWise API startup complete")
+    print("✅ ClaimAssist API startup complete")
     yield
     
     # Shutdown
-    print("👋 Shutting down ClaimWise API...")
+    print("👋 Shutting down ClaimAssist API...")
 
 
 def create_application() -> FastAPI:
