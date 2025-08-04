@@ -112,7 +112,7 @@ export default function ClaimForm({ policyMetadata, onClaimSubmitted, isLoading,
             value={formData.policy_holder_name}
             onChange={handleInputChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="Enter the policy holder's full name"
           />
         </div>
@@ -130,7 +130,7 @@ export default function ClaimForm({ policyMetadata, onClaimSubmitted, isLoading,
               value={formData.incident_date}
               onChange={handleInputChange}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             />
           </div>
 
@@ -144,7 +144,7 @@ export default function ClaimForm({ policyMetadata, onClaimSubmitted, isLoading,
               name="incident_time"
               value={formData.incident_time}
               onChange={handleInputChange}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             />
           </div>
         </div>
@@ -161,7 +161,7 @@ export default function ClaimForm({ policyMetadata, onClaimSubmitted, isLoading,
             value={formData.location}
             onChange={handleInputChange}
             required
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="e.g., 123 Main St, City, State, ZIP"
           />
         </div>
@@ -178,7 +178,7 @@ export default function ClaimForm({ policyMetadata, onClaimSubmitted, isLoading,
             onChange={handleInputChange}
             required
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
             placeholder="Describe what happened in detail. Include information about the cause, extent of damage, any immediate actions taken, evidence available (photos, witnesses), and any other relevant details that might help evaluate your claim."
           />
           <p className="text-sm text-gray-500 mt-1">
