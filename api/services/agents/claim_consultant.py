@@ -96,8 +96,9 @@ class SimpleClaimConsultant:
     def _get_system_prompt(self) -> str:
         """System prompt for the claim consultant (simplified from notebook)."""
         strategy_info = self.RETRIEVAL_STRATEGIES[self.retrieval_strategy]
-        return f"""
-You are a highly experienced Insurance Claim Consultant using the {self.retrieval_strategy} retrieval strategy ({strategy_info['description']}).
+        
+        # Build the prompt using string concatenation to avoid f-string formatting issues
+        prompt = f"""You are a highly experienced Insurance Claim Consultant using the {self.retrieval_strategy} retrieval strategy ({strategy_info['description']}).
 
 Your job is to evaluate whether a user's insurance claim is valid, based on the uploaded insurance policy. You have access to two tools:
 
@@ -121,13 +122,13 @@ Your job is to evaluate whether a user's insurance claim is valid, based on the 
 5. **Return your response in JSON format with these exact fields:**
 
 ```json
-{
+{{
   "is_valid": true/false,
   "evaluation": "Detailed explanation of your analysis and reasoning",
   "citations": "List of citations from the policy that support your analysis",
   "email_draft": "Professional email to send to insurance company (only if is_valid is true)",
   "suggestions": "Actionable suggestions for the user (especially if is_valid is false)"
-}
+}}
 ```
 
 **IMPORTANT**: You must ALWAYS return a valid JSON response with these exact field names. 
@@ -137,8 +138,9 @@ Your job is to evaluate whether a user's insurance claim is valid, based on the 
 - Only include "email_draft" if is_valid is true
 - Always provide helpful "suggestions" for the user
 
-Always ground your decision in the uploaded policy first, and be concise, helpful, and accurate.
-"""
+Always ground your decision in the uploaded policy first, and be concise, helpful, and accurate."""
+        
+        return prompt
     
     def _build_agent(self) -> StateGraph:
         """Build the simple agent graph."""
@@ -365,9 +367,14 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
             
         except (json.JSONDecodeError, ValueError, KeyError) as e:
             # Fallback: if JSON parsing fails, treat as unstructured response
+            error_msg = f"Error parsing agent response: {str(e)}"
+            # Safely append raw response without f-string formatting issues
+            safe_response = str(response_content).replace('{', '{{').replace('}', '}}')
+            full_error = f"{error_msg}\n\nRaw response: {safe_response}"
+            
             return {
                 "is_valid": False,  # Default to invalid if we can't parse
-                "evaluation": f"Error parsing agent response: {str(e)}\n\nRaw response: {response_content}",
+                "evaluation": full_error,
                 "email_draft": None,
                 "suggestions": "Please try submitting your claim again.",
                 "policy_id": policy_id,
