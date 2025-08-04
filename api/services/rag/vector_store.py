@@ -72,5 +72,13 @@ class SimpleVectorStore:
         return str(uuid.uuid4())
 
 
-# Global instance - simple singleton pattern
-vector_store_manager = SimpleVectorStore()
+# Global instance - lazy initialization to avoid API key issues at import time
+_vector_store_manager = None
+
+
+def get_vector_store_manager() -> SimpleVectorStore:
+    """Get the global vector store manager instance (lazy initialization)."""
+    global _vector_store_manager
+    if _vector_store_manager is None:
+        _vector_store_manager = SimpleVectorStore()
+    return _vector_store_manager

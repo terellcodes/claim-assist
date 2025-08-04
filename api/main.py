@@ -5,6 +5,7 @@ from mangum import Mangum
 
 from config.settings import get_settings, Settings
 from utils.constants import ResponseMessage, StatusCode
+from api.v1.api import api_router
 
 
 @asynccontextmanager
@@ -14,10 +15,32 @@ async def lifespan(app: FastAPI):
     Handles startup and shutdown events.
     """
     # Startup
-    print("Starting up...")
+    print("🚀 Starting ClaimWise API...")
+    
+    # Initialize and validate settings
+    try:
+        settings = get_settings()
+        print(f"✅ Settings loaded: {settings.APP_NAME} v{settings.APP_VERSION}")
+        
+        # Validate API keys (but don't fail if missing in development)
+        if settings.has_required_api_keys:
+            print("✅ All required API keys are configured")
+        else:
+            if settings.is_development:
+                print("⚠️  Some API keys missing - functionality may be limited")
+            else:
+                print("❌ Missing required API keys in production!")
+                
+    except Exception as e:
+        print(f"❌ Settings initialization failed: {e}")
+        if not get_settings().is_development:
+            raise  # Fail in production, but allow development to continue
+    
+    print("✅ ClaimWise API startup complete")
     yield
+    
     # Shutdown
-    print("Shutting down...")
+    print("👋 Shutting down ClaimWise API...")
 
 
 def create_application() -> FastAPI:
@@ -42,6 +65,9 @@ def create_application() -> FastAPI:
         allow_methods=settings.ALLOWED_METHODS,
         allow_headers=settings.ALLOWED_HEADERS,
     )
+
+    # Include API routes
+    app.include_router(api_router, prefix="/api")
 
     return app
 

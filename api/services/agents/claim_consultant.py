@@ -31,9 +31,14 @@ class SimpleClaimConsultant:
         self.llm = ChatOpenAI(model="gpt-4o-mini")
         self.system_prompt = self._get_system_prompt()
         
-        # Tools setup
-        self.tavily_tool = TavilySearchResults(max_results=5)
-        self.tools = [self.tavily_tool]  # RAG tool will be added dynamically
+        # Tools setup - make Tavily optional
+        self.tools = []
+        try:
+            self.tavily_tool = TavilySearchResults(max_results=5)
+            self.tools.append(self.tavily_tool)
+        except Exception:
+            # Tavily API key not available - continue without web search
+            self.tavily_tool = None
         
         # LLM with tools
         self.llm_with_tools = self.llm.bind_tools(self.tools)
@@ -112,19 +117,22 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         Add RAG tool for a specific policy.
         This will be called when processing a claim.
         """
-        from ..rag.vector_store import vector_store_manager
+        from services.rag.vector_store import get_vector_store_manager
         
         @tool
         def retrieve_insurance_policy(
             query: Annotated[str, "query to ask the retrieve insurance policy tool"]
         ):
             """Use Retrieval Augmented Generation to retrieve information insurance policy clauses to determine if a claim is covered"""
+            vector_store_manager = get_vector_store_manager()
             policy_store = vector_store_manager.get_policy_store(policy_id)
             retriever = policy_store.as_retriever(search_kwargs={"k": 5})
             return retriever.invoke(query)
         
         # Update tools and rebuild LLM
-        self.tools = [retrieve_insurance_policy, self.tavily_tool]
+        self.tools = [retrieve_insurance_policy]
+        if self.tavily_tool:
+            self.tools.append(self.tavily_tool)
         self.llm_with_tools = self.llm.bind_tools(self.tools)
     
     def evaluate_claim(self, user_input: str, policy_id: str) -> Dict[str, Any]:
