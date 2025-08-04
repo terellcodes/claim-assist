@@ -126,4 +126,4 @@ uv add langchain langgraph langchain-community langsmith
 - Consider using LangChain's async APIs for better performance in FastAPI
 
 ### User Experience
-- For any component that is rendering an LLM or Agent response ensure it supports Markdown Rendering
+- For any component that is rendering an LLM or Agent response ensure it supports Markdown Rendering using `react-markdown`
