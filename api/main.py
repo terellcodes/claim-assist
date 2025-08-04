@@ -2,10 +2,36 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
+import os
 
 from config.settings import get_settings, Settings
 from utils.constants import ResponseMessage, StatusCode
-from api.v1.api import api_router
+from routes.policies import router as policies_router
+from routes.claims import router as claims_router
+from routes.health import router as health_router
+
+
+def configure_environment():
+    """Configure environment variables for AI services."""
+    settings = get_settings()
+    
+    # Set OpenAI API key if available
+    if settings.OPENAI_API_KEY:
+        os.environ["OPENAI_API_KEY"] = settings.OPENAI_API_KEY
+    
+    # Set Tavily API key if available  
+    if settings.TAVILY_API_KEY:
+        os.environ["TAVILY_API_KEY"] = settings.TAVILY_API_KEY
+    
+    # Set LangSmith tracing if enabled
+    if settings.LANGCHAIN_TRACING_V2.lower() == "true":
+        os.environ["LANGCHAIN_TRACING_V2"] = "true"
+        os.environ["LANGCHAIN_PROJECT"] = settings.LANGCHAIN_PROJECT
+        if settings.LANGSMITH_API_KEY:
+            os.environ["LANGSMITH_API_KEY"] = settings.LANGSMITH_API_KEY
+        print(f"🔍 LangSmith tracing enabled for project: {settings.LANGCHAIN_PROJECT}")
+    else:
+        print("📝 LangSmith tracing disabled")
 
 
 @asynccontextmanager
@@ -16,6 +42,9 @@ async def lifespan(app: FastAPI):
     """
     # Startup
     print("🚀 Starting ClaimWise API...")
+    
+    # Configure environment variables
+    configure_environment()
     
     # Initialize and validate settings
     try:
@@ -54,7 +83,7 @@ def create_application() -> FastAPI:
         description=settings.APP_DESCRIPTION,
         version=settings.APP_VERSION,
         lifespan=lifespan,
-        root_path="/api" if not settings.DEBUG else ""  # Add root_path for production
+        root_path=""  # No root path needed since routes have /api prefix
     )
 
     # Configure CORS
@@ -66,17 +95,10 @@ def create_application() -> FastAPI:
         allow_headers=settings.ALLOWED_HEADERS,
     )
 
-    # Include API routes
-    app.include_router(api_router, prefix="/api")
-    
-    # Debug: Print registered routes
-    if settings.DEBUG:
-        print("🔍 Registered routes:")
-        for route in app.routes:
-            if hasattr(route, 'path'):
-                print(f"  {route.path}")
-            if hasattr(route, 'methods'):
-                print(f"    Methods: {route.methods}")
+    # Include routers
+    app.include_router(policies_router)
+    app.include_router(claims_router)
+    app.include_router(health_router)
 
     return app
 
@@ -86,7 +108,7 @@ app = create_application()
 
 @app.get("/health")
 async def health_check():
-    """Health check endpoint"""
+    """Health check endpoint (fallback)"""
     return {
         "status": ResponseMessage.SUCCESS,
         "code": StatusCode.HTTP_200_OK,

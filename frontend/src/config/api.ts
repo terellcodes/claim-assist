@@ -28,11 +28,11 @@ const getApiBaseUrl = () => {
 export const API_BASE_URL = getApiBaseUrl();
 
 export const API_ENDPOINTS = {
-    HEALTH: `${API_BASE_URL}/health`,
+    HEALTH: `${API_BASE_URL}/api/health`,
     POLICIES: {
-        UPLOAD: `${API_BASE_URL}/api/v1/policies/upload`,
+        UPLOAD: `${API_BASE_URL}/api/policies/upload`,
     },
     CLAIMS: {
-        SUBMIT: `${API_BASE_URL}/api/v1/claims/submit`,
+        SUBMIT: `${API_BASE_URL}/api/claims/submit`,
     },
 } as const; 
