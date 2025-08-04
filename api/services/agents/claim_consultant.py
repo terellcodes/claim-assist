@@ -21,9 +21,9 @@ class AgentState(TypedDict):
     messages: Annotated[list, add_messages]
 
 
-class SimpleClaimConsultant:
+class ClaimConsultantAgent:
     """
-    Simple claim consultant agent ported from notebook.
+    Claim consultant agent ported from notebook.
     Evaluates insurance claims against uploaded policies.
     
     Supports multiple retrieval strategies:
@@ -389,9 +389,9 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
 _claim_consultant = None
 
 
-def get_claim_consultant() -> SimpleClaimConsultant:
+def get_claim_consultant() -> ClaimConsultantAgent:
     """Get the global claim consultant instance (lazy initialization)."""
     global _claim_consultant
     if _claim_consultant is None:
-        _claim_consultant = SimpleClaimConsultant()
+        _claim_consultant = ClaimConsultantAgent()
     return _claim_consultant
