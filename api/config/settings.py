@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     LANGCHAIN_TRACING_V2: str = "false"
     LANGCHAIN_PROJECT: str = "ClaimAssist"
     LANGSMITH_API_KEY: Optional[str] = None
+    COHERE_API_KEY: Optional[str] = None
     
     # CORS Settings
     ALLOWED_ORIGINS: List[str] = [

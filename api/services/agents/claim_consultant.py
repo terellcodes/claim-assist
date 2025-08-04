@@ -4,7 +4,7 @@ Simple Claim Consultant Agent
 Ported from notebook prototype. Keeps the core logic simple.
 """
 
-from typing import TypedDict, Annotated, Dict, Any
+from typing import TypedDict, Annotated, Dict, Any, Optional
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
 from langchain_tavily import TavilySearch
@@ -25,9 +25,56 @@ class SimpleClaimConsultant:
     """
     Simple claim consultant agent ported from notebook.
     Evaluates insurance claims against uploaded policies.
+    
+    Supports multiple retrieval strategies:
+    - basic: Simple k=5 vector search
+    - advanced_flashrank: k=20 with FlashRank reranking to top 5
+    - advanced_cohere: k=20 with Cohere reranking to top 5
     """
     
-    def __init__(self):
+    # Supported retrieval strategies
+    RETRIEVAL_STRATEGIES = {
+        "basic": {
+            "initial_k": 5,
+            "final_k": 5,
+            "reranker": None,
+            "description": "Fast and efficient for most claims"
+        },
+        "advanced_flashrank": {
+            "initial_k": 20,
+            "final_k": 5,
+            "reranker": "flashrank",
+            "description": "More accurate context selection using AI reranking"
+        },
+        "advanced_cohere": {
+            "initial_k": 20,
+            "final_k": 5,
+            "reranker": "cohere",
+            "description": "Premium accuracy with Cohere reranking (requires API key)"
+        }
+    }
+    
+    def __init__(self, retrieval_strategy: str = "basic"):
+        """
+        Initialize the claim consultant agent.
+        
+        Args:
+            retrieval_strategy: Strategy for document retrieval
+                - "basic": Simple k=5 vector search (default)
+                - "advanced_flashrank": k=20 with FlashRank reranking (offline)
+                - "advanced_cohere": k=20 with Cohere reranking (requires API key)
+        """
+        if retrieval_strategy not in self.RETRIEVAL_STRATEGIES:
+            raise ValueError(f"Invalid retrieval strategy: {retrieval_strategy}. "
+                           f"Must be one of: {list(self.RETRIEVAL_STRATEGIES.keys())}")
+        
+        self.retrieval_strategy = retrieval_strategy
+        strategy_info = self.RETRIEVAL_STRATEGIES[retrieval_strategy]
+        
+        print(f"📊 Initializing ClaimConsultant with '{retrieval_strategy}' strategy")
+        print(f"   📋 {strategy_info['description']}")
+        print(f"   🔍 Retrieval: k={strategy_info['initial_k']} → {strategy_info['final_k']} (reranker: {strategy_info['reranker'] or 'none'})")
+        
         self.llm = ChatOpenAI(model="gpt-4o-mini")
         self.system_prompt = self._get_system_prompt()
         
@@ -48,12 +95,13 @@ class SimpleClaimConsultant:
     
     def _get_system_prompt(self) -> str:
         """System prompt for the claim consultant (simplified from notebook)."""
-        return """
-You are a highly experienced Insurance Claim Consultant.
+        strategy_info = self.RETRIEVAL_STRATEGIES[self.retrieval_strategy]
+        return f"""
+You are a highly experienced Insurance Claim Consultant using the {self.retrieval_strategy} retrieval strategy ({strategy_info['description']}).
 
 Your job is to evaluate whether a user's insurance claim is valid, based on the uploaded insurance policy. You have access to two tools:
 
-1. **RAG Search on Insurance Policy** – Use this to search and retrieve relevant clauses from the user's uploaded policy.
+1. **RAG Search on Insurance Policy** – Use this to search and retrieve relevant clauses from the user's uploaded policy. This uses {strategy_info['description'].lower()} for finding the most relevant policy sections.
 2. **Web Search Tool** – Use this to research any external facts (e.g., explanations of storm mechanics, typical standards for valid claims, or definitions of insurance terminology) to help clarify or strengthen your response.
 
 ## Tool Usage Guidelines
@@ -127,31 +175,135 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         
         return graph.compile()
     
-    def add_rag_tool(self, policy_id: str):
-        """
-        Add RAG tool for a specific policy.
-        This will be called when processing a claim.
-        """
+    def _create_basic_retriever(self, policy_id: str):
+        """Create basic k=5 retriever."""
+        print(f"🔍 Creating basic retriever for policy {policy_id[:8]}... (k=5)")
         from services.rag.vector_store import get_vector_store_manager
+        
+        vector_store_manager = get_vector_store_manager()
+        policy_store = vector_store_manager.get_policy_store(policy_id)
+        retriever = policy_store.as_retriever(search_kwargs={"k": 5})
+        print(f"✅ Basic retriever created successfully")
+        return retriever
+    
+    def _create_advanced_flashrank_retriever(self, policy_id: str):
+        """Create advanced retriever with FlashRank reranking."""
+        print(f"🎯 Creating FlashRank retriever for policy {policy_id[:8]}... (k=20 → rerank → top 5)")
+        from services.rag.vector_store import get_vector_store_manager
+        from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+        from langchain.retrievers.document_compressors import FlashrankRerank
+        
+        try:
+            # Get base retriever with k=20
+            vector_store_manager = get_vector_store_manager()
+            policy_store = vector_store_manager.get_policy_store(policy_id)
+            base_retriever = policy_store.as_retriever(search_kwargs={"k": 20})
+            print(f"   📝 Base retriever created (k=20)")
+            
+            # Create FlashRank compressor (offline, no API key needed)
+            compressor = FlashrankRerank()
+            print(f"   🔧 FlashRank compressor initialized (offline)")
+            
+            # Create compression retriever
+            compression_retriever = ContextualCompressionRetriever(
+                base_compressor=compressor,
+                base_retriever=base_retriever
+            )
+            print(f"✅ FlashRank retriever created successfully")
+            return compression_retriever
+            
+        except Exception as e:
+            print(f"❌ Failed to create FlashRank retriever: {str(e)}")
+            print(f"   🔄 Falling back to basic retriever")
+            return self._create_basic_retriever(policy_id)
+    
+    def _create_advanced_cohere_retriever(self, policy_id: str):
+        """Create advanced retriever with Cohere reranking."""
+        print(f"⭐ Creating Cohere retriever for policy {policy_id[:8]}... (k=20 → rerank → top 5)")
+        from services.rag.vector_store import get_vector_store_manager
+        from langchain.retrievers.contextual_compression import ContextualCompressionRetriever
+        
+        try:
+            from langchain_cohere import CohereRerank
+            print(f"   📦 Cohere package imported successfully")
+        except ImportError:
+            print(f"❌ CohereRerank not available. Install with: pip install langchain-cohere")
+            print(f"   🔄 Falling back to FlashRank retriever")
+            return self._create_advanced_flashrank_retriever(policy_id)
+        
+        try:
+            # Get base retriever with k=20
+            vector_store_manager = get_vector_store_manager()
+            policy_store = vector_store_manager.get_policy_store(policy_id)
+            base_retriever = policy_store.as_retriever(search_kwargs={"k": 20})
+            print(f"   📝 Base retriever created (k=20)")
+            
+            # Create Cohere compressor (requires API key)
+            compressor = CohereRerank(model="rerank-v3.5")
+            print(f"   🔧 Cohere compressor initialized (model: rerank-v3.5)")
+            
+            # Create compression retriever
+            compression_retriever = ContextualCompressionRetriever(
+                base_compressor=compressor,
+                base_retriever=base_retriever,
+                search_kwargs={"k": 5}
+            )
+            print(f"✅ Cohere retriever created successfully")
+            return compression_retriever
+            
+        except Exception as e:
+            print(f"❌ Failed to create Cohere retriever: {str(e)}")
+            print(f"   🔄 Falling back to FlashRank retriever")
+            return self._create_advanced_flashrank_retriever(policy_id)
+    
+    def add_rag_tool(self, policy_id: str, strategy: Optional[str] = None):
+        """
+        Add RAG tool for a specific policy using the specified retrieval strategy.
+        
+        Args:
+            policy_id: ID of the policy to create retriever for
+            strategy: Override the instance strategy for this specific policy
+                     If None, uses self.retrieval_strategy
+        """
+        # Use provided strategy or fall back to instance strategy
+        strategy = strategy or self.retrieval_strategy
+        
+        print(f"🔧 Adding RAG tool for policy {policy_id[:8]}... using '{strategy}' strategy")
+        
+        if strategy not in self.RETRIEVAL_STRATEGIES:
+            raise ValueError(f"Invalid strategy: {strategy}. "
+                           f"Must be one of: {list(self.RETRIEVAL_STRATEGIES.keys())}")
+        
+        # Create appropriate retriever based on strategy
+        if strategy == "basic":
+            retriever = self._create_basic_retriever(policy_id)
+        elif strategy == "advanced_flashrank":
+            retriever = self._create_advanced_flashrank_retriever(policy_id)
+        elif strategy == "advanced_cohere":
+            retriever = self._create_advanced_cohere_retriever(policy_id)
+        else:
+            raise ValueError(f"Strategy {strategy} not implemented")
         
         @tool
         def retrieve_insurance_policy(
             query: Annotated[str, "query to ask the retrieve insurance policy tool"]
         ):
             """Use Retrieval Augmented Generation to retrieve information insurance policy clauses to determine if a claim is covered"""
-            vector_store_manager = get_vector_store_manager()
-            policy_store = vector_store_manager.get_policy_store(policy_id)
-            retriever = policy_store.as_retriever(search_kwargs={"k": 5})
-            return retriever.invoke(query)
+            print(f"🔍 RAG tool invoked with query: {query[:100]}{'...' if len(query) > 100 else ''}")
+            result = retriever.invoke(query)
+            print(f"   📄 Retrieved {len(result)} documents")
+            return result
         
         # Update tools and rebuild LLM
         self.tools = [retrieve_insurance_policy]
         if self.tavily_tool:
             self.tools.append(self.tavily_tool)
         self.llm_with_tools = self.llm.bind_tools(self.tools)
+        print(f"   🛠️  Tools updated: RAG + {'Tavily' if self.tavily_tool else 'no web search'}")
         
         # Rebuild the agent graph with the new tools
         self.agent = self._build_agent()
+        print(f"✅ RAG tool added successfully with '{strategy}' strategy")
     
     def evaluate_claim(self, user_input: str, policy_id: str) -> Dict[str, Any]:
         """

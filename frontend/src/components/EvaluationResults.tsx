@@ -82,12 +82,29 @@ export default function EvaluationResults({ evaluation, policyMetadata, onStartO
         </div>
 
         {/* Status Badge */}
-        <div className={`inline-flex items-center px-4 py-2 rounded-full border ${getStatusColor(evaluation.claim_status)} mb-6`}>
+        <div className={`inline-flex items-center px-4 py-2 rounded-full border ${getStatusColor(evaluation.claim_status)} mb-4`}>
           {getStatusIcon(evaluation.claim_status)}
           <span className="ml-2 font-medium capitalize">
             {evaluation.claim_status === 'needs_review' ? 'Needs Review' : evaluation.claim_status}
           </span>
         </div>
+
+        {/* Strategy Information */}
+        {evaluation.retrieval_strategy && (
+          <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-800 text-sm mb-6">
+            <span className="mr-1">
+              {evaluation.retrieval_strategy === 'basic' ? '⚡' : 
+               evaluation.retrieval_strategy === 'advanced_flashrank' ? '🎯' : '⭐'}
+            </span>
+            <span className="font-medium">
+              Analyzed using{' '}
+              {evaluation.retrieval_strategy === 'basic' ? 'Basic Retrieval' :
+               evaluation.retrieval_strategy === 'advanced_flashrank' ? 'Advanced AI Reranking' :
+               evaluation.retrieval_strategy === 'advanced_cohere' ? 'Premium Accuracy' :
+               evaluation.retrieval_strategy} strategy
+            </span>
+          </div>
+        )}
 
         {/* Policy Information */}
         {policyMetadata && (

@@ -5,7 +5,7 @@ Simple Pydantic models for claim submission and responses.
 """
 
 from pydantic import BaseModel, Field
-from typing import Optional, List
+from typing import Optional, List, Literal
 from datetime import datetime
 from .base import BaseResponse
 
@@ -18,6 +18,10 @@ class ClaimRequest(BaseModel):
     incident_time: Optional[str] = Field(None, description="Time of incident (HH:MM)")
     location: str = Field(..., description="Location where incident occurred")
     description: str = Field(..., description="Detailed description of the claim", min_length=10)
+    retrieval_strategy: Literal["basic", "advanced_flashrank", "advanced_cohere"] = Field(
+        default="basic", 
+        description="Strategy for retrieving relevant policy information"
+    )
 
 
 class ClaimResponse(BaseResponse):
@@ -28,6 +32,7 @@ class ClaimResponse(BaseResponse):
     citations: Optional[List[str]] = Field(None, description="Citations from the policy that support the analysis")
     email_draft: Optional[str] = Field(None, description="Professional email draft if claim is valid")
     suggestions: Optional[List[str]] = Field(None, description="Suggestions for improvement if invalid")
+    retrieval_strategy: str = Field(..., description="Strategy used for policy retrieval")
     processed_at: datetime = Field(default_factory=datetime.now, description="When claim was processed")
 
 

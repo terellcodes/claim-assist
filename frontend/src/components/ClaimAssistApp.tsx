@@ -24,6 +24,7 @@ export interface ClaimEvaluation {
   email_draft?: string
   suggestions?: string[]
   policy_id: string
+  retrieval_strategy: string
 }
 
 type AppStep = 'upload' | 'claim' | 'results'
@@ -41,6 +42,7 @@ export default function ClaimAssistApp() {
     incident_time: string
     location: string
     description: string
+    retrieval_strategy: string
   } | null>(null)
 
   const handlePolicyUploaded = (metadata: PolicyMetadata) => {

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { API_ENDPOINTS, logger } from '@/config/api'
 import { PolicyMetadata, ClaimEvaluation } from './ClaimAssistApp'
+import RetrievalStrategySelector from './RetrievalStrategySelector'
 
 interface FormData {
   policy_holder_name: string
@@ -10,6 +11,7 @@ interface FormData {
   incident_time: string
   location: string
   description: string
+  retrieval_strategy: string
 }
 
 interface ClaimFormProps {
@@ -44,7 +46,8 @@ export default function ClaimForm({
       incident_date: '',
       incident_time: '',
       location: '',
-      description: ''
+      description: '',
+      retrieval_strategy: 'advanced_flashrank' // Default to recommended strategy
     }
   })
   const [error, setError] = useState<string | null>(null)
@@ -57,6 +60,14 @@ export default function ClaimForm({
     }))
   }
 
+  const handleStrategyChange = (strategy: string) => {
+    logger.info(`ClaimForm: Strategy changed to '${strategy}'`)
+    setFormData((prev: FormData) => ({
+      ...prev,
+      retrieval_strategy: strategy
+    }))
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
@@ -64,6 +75,7 @@ export default function ClaimForm({
 
     try {
       logger.info('Submitting claim for evaluation', formData)
+      logger.info(`📊 Using retrieval strategy: ${formData.retrieval_strategy}`)
 
       const claimRequest = {
         policy_id: policyMetadata.policy_id,
@@ -85,6 +97,8 @@ export default function ClaimForm({
 
       const result = await response.json()
       logger.success('Claim evaluated successfully', result)
+      logger.info(`✅ Evaluation completed using '${result.retrieval_strategy}' strategy`)
+      logger.info(`📊 Result: ${result.claim_status} - ${result.evaluation?.substring(0, 100)}...`)
       onClaimSubmitted(result, formData)
       
     } catch (err) {
@@ -168,6 +182,17 @@ export default function ClaimForm({
           )}
         </div>
       </div>
+
+      {/* Retrieval Strategy Selector - only show when not read-only */}
+      {!isReadOnly && (
+        <div className="border-t border-gray-200 pt-6">
+          <RetrievalStrategySelector
+            selectedStrategy={formData.retrieval_strategy}
+            onStrategyChange={handleStrategyChange}
+            disabled={isLoading}
+          />
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Policy Holder Name */}

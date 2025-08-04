@@ -5,7 +5,7 @@ Simple service for handling claim submissions and evaluations.
 """
 
 from typing import Dict, Any
-from services.agents.claim_consultant import get_claim_consultant
+from services.agents.claim_consultant import get_claim_consultant, SimpleClaimConsultant
 from services.policy_service import policy_service
 from models.schemas.claim import ClaimRequest, ClaimResponse
 
@@ -14,15 +14,28 @@ class ClaimService:
     """Simple service for claim operations."""
     
     def __init__(self):
-        # Use lazy initialization - agent will be created when first needed
-        self._agent = None
+        # Keep the default agent for backward compatibility
+        self._default_agent = None
     
     @property
-    def agent(self):
-        """Lazy initialization of the claim consultant agent."""
-        if self._agent is None:
-            self._agent = get_claim_consultant()
-        return self._agent
+    def default_agent(self):
+        """Lazy initialization of the default claim consultant agent."""
+        if self._default_agent is None:
+            self._default_agent = get_claim_consultant()
+        return self._default_agent
+    
+    def get_agent_for_strategy(self, strategy: str) -> SimpleClaimConsultant:
+        """Get agent instance for specific retrieval strategy."""
+        print(f"🤖 ClaimService: Getting agent for '{strategy}' strategy")
+        
+        if strategy == "basic":
+            # Use cached default agent for basic strategy for performance
+            print(f"   ♻️  Using cached basic agent (performance optimization)")
+            return self.default_agent
+        else:
+            # Create new agent instance for advanced strategies
+            print(f"   🆕 Creating new agent instance for advanced strategy")
+            return SimpleClaimConsultant(retrieval_strategy=strategy)
     
     async def submit_claim(self, claim_request: ClaimRequest) -> ClaimResponse:
         """
@@ -34,6 +47,11 @@ class ClaimService:
         Returns:
             ClaimResponse with evaluation results
         """
+        print(f"📥 ClaimService: Received claim submission")
+        print(f"   🏷️  Policy ID: {claim_request.policy_id[:8]}...")
+        print(f"   📊 Strategy: {claim_request.retrieval_strategy}")
+        print(f"   📝 Description length: {len(claim_request.description)} chars")
+        
         # Verify policy exists
         policy_metadata = policy_service.get_policy_metadata(claim_request.policy_id)
         if not policy_metadata:
@@ -41,6 +59,7 @@ class ClaimService:
                 policy_id=claim_request.policy_id,
                 claim_status="invalid",
                 evaluation="Policy not found. Please upload your policy first.",
+                retrieval_strategy=claim_request.retrieval_strategy,
                 success=False,
                 message="Policy not found"
             )
@@ -48,9 +67,14 @@ class ClaimService:
         # Format claim description for agent
         formatted_claim = self._format_claim_description(claim_request)
         
+        # Get agent with specified retrieval strategy
+        agent = self.get_agent_for_strategy(claim_request.retrieval_strategy)
+        
         # Evaluate with agent
         try:
-            result = self.agent.evaluate_claim(formatted_claim, claim_request.policy_id)
+            print(f"🔍 Starting claim evaluation with {claim_request.retrieval_strategy} strategy...")
+            result = agent.evaluate_claim(formatted_claim, claim_request.policy_id)
+            print(f"✅ Claim evaluation completed successfully")
             
             # Agent now returns structured data - use it directly
             is_valid = result.get("is_valid", False)
@@ -79,6 +103,7 @@ class ClaimService:
                 citations=citations,
                 email_draft=email_draft,
                 suggestions=suggestions,
+                retrieval_strategy=claim_request.retrieval_strategy,
                 message="Claim evaluated successfully"
             )
             
@@ -87,6 +112,7 @@ class ClaimService:
                 policy_id=claim_request.policy_id,
                 claim_status="error",
                 evaluation=f"Error evaluating claim: {str(e)}",
+                retrieval_strategy=claim_request.retrieval_strategy,
                 success=False,
                 message="Evaluation failed"
             )
