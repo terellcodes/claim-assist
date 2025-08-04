@@ -149,6 +149,9 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         if self.tavily_tool:
             self.tools.append(self.tavily_tool)
         self.llm_with_tools = self.llm.bind_tools(self.tools)
+        
+        # Rebuild the agent graph with the new tools
+        self.agent = self._build_agent()
     
     def evaluate_claim(self, user_input: str, policy_id: str) -> Dict[str, Any]:
         """
