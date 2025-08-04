@@ -27,6 +27,7 @@ dependencies = [
     "pypdf>=4.0.0",
     "aiofiles>=23.1.0",
     "tavily-python>=0.3.0",
+    "langchain-tavily>=0.2.0",
     "langsmith",
     "ragas>=0.3.0",
     "Pillow>=9.0.0",

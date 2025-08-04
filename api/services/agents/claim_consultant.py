@@ -7,7 +7,7 @@ Ported from notebook prototype. Keeps the core logic simple.
 from typing import TypedDict, Annotated, Dict, Any
 from langchain_core.messages import HumanMessage, SystemMessage
 from langchain_openai import ChatOpenAI
-from langchain_community.tools.tavily_search import TavilySearchResults
+from langchain_tavily import TavilySearch
 from langchain_core.tools import tool
 from langgraph.graph.message import add_messages
 from langgraph.graph import StateGraph, END
@@ -34,7 +34,7 @@ class SimpleClaimConsultant:
         # Tools setup - make Tavily optional
         self.tools = []
         try:
-            self.tavily_tool = TavilySearchResults(max_results=5)
+            self.tavily_tool = TavilySearch(max_results=5)
             self.tools.append(self.tavily_tool)
         except Exception:
             # Tavily API key not available - continue without web search
