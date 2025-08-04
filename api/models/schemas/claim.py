@@ -25,6 +25,7 @@ class ClaimResponse(BaseResponse):
     policy_id: str = Field(..., description="Policy ID that was evaluated")
     claim_status: str = Field(..., description="Status: 'valid', 'invalid', or 'needs_review'")
     evaluation: str = Field(..., description="Detailed evaluation from AI agent")
+    citations: Optional[List[str]] = Field(None, description="Citations from the policy that support the analysis")
     email_draft: Optional[str] = Field(None, description="Professional email draft if claim is valid")
     suggestions: Optional[List[str]] = Field(None, description="Suggestions for improvement if invalid")
     processed_at: datetime = Field(default_factory=datetime.now, description="When claim was processed")

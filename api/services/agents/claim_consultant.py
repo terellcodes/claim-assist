@@ -76,6 +76,7 @@ Your job is to evaluate whether a user's insurance claim is valid, based on the 
 {
   "is_valid": true/false,
   "evaluation": "Detailed explanation of your analysis and reasoning",
+  "citations": "List of citations from the policy that support your analysis",
   "email_draft": "Professional email to send to insurance company (only if is_valid is true)",
   "suggestions": "Actionable suggestions for the user (especially if is_valid is false)"
 }
@@ -200,6 +201,7 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
             return {
                 "is_valid": parsed_response["is_valid"],
                 "evaluation": parsed_response.get("evaluation", ""),
+                "citations": parsed_response.get("citations"),
                 "email_draft": parsed_response.get("email_draft"),
                 "suggestions": parsed_response.get("suggestions"),
                 "policy_id": policy_id,

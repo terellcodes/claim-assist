@@ -19,6 +19,7 @@ export interface ClaimEvaluation {
   claim_id: string
   claim_status: 'valid' | 'invalid' | 'needs_review'
   evaluation: string
+  citations?: string[]
   email_draft?: string
   suggestions?: string[]
   policy_id: string

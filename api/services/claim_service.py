@@ -56,8 +56,15 @@ class ClaimService:
             is_valid = result.get("is_valid", False)
             claim_status = "valid" if is_valid else "invalid"
             evaluation = result.get("evaluation", "")
+            citations = result.get("citations")
             email_draft = result.get("email_draft")
             suggestions = result.get("suggestions")
+            
+            # Ensure citations is a list (convert string to list if needed)
+            if isinstance(citations, str) and citations:
+                citations = [citations]
+            elif not citations:
+                citations = None
             
             # Ensure suggestions is a list (convert string to list if needed)
             if isinstance(suggestions, str) and suggestions:
@@ -69,6 +76,7 @@ class ClaimService:
                 policy_id=claim_request.policy_id,
                 claim_status=claim_status,
                 evaluation=evaluation,
+                citations=citations,
                 email_draft=email_draft,
                 suggestions=suggestions,
                 message="Claim evaluated successfully"
