@@ -31,6 +31,15 @@ export default function ClaimWiseApp() {
   const [policyMetadata, setPolicyMetadata] = useState<PolicyMetadata | null>(null)
   const [claimEvaluation, setClaimEvaluation] = useState<ClaimEvaluation | null>(null)
   const [isLoading, setIsLoading] = useState(false)
+  const [isFormCollapsed, setIsFormCollapsed] = useState(true)
+  const [isFormEditable, setIsFormEditable] = useState(false)
+  const [claimFormData, setClaimFormData] = useState<{
+    policy_holder_name: string
+    incident_date: string
+    incident_time: string
+    location: string
+    description: string
+  } | null>(null)
 
   const handlePolicyUploaded = (metadata: PolicyMetadata) => {
     logger.success('Policy uploaded successfully', metadata)
@@ -38,16 +47,31 @@ export default function ClaimWiseApp() {
     setCurrentStep('claim')
   }
 
-  const handleClaimSubmitted = (evaluation: ClaimEvaluation) => {
+  const handleClaimSubmitted = (evaluation: ClaimEvaluation, formData: typeof claimFormData) => {
     logger.success('Claim evaluated successfully', evaluation)
     setClaimEvaluation(evaluation)
+    setClaimFormData(formData)
     setCurrentStep('results')
+    setIsFormCollapsed(true)
+    setIsFormEditable(false)
   }
 
   const handleStartOver = () => {
     setPolicyMetadata(null)
     setClaimEvaluation(null)
+    setClaimFormData(null)
     setCurrentStep('upload')
+    setIsFormCollapsed(true)
+    setIsFormEditable(false)
+  }
+
+  const handleToggleForm = () => {
+    setIsFormCollapsed(!isFormCollapsed)
+  }
+
+  const handleEditForm = () => {
+    setIsFormEditable(true)
+    setIsFormCollapsed(false)
   }
 
   return (
@@ -128,12 +152,29 @@ export default function ClaimWiseApp() {
             />
           )}
           
-          {currentStep === 'results' && claimEvaluation && (
-            <EvaluationResults 
-              evaluation={claimEvaluation}
-              policyMetadata={policyMetadata}
-              onStartOver={handleStartOver}
-            />
+          {currentStep === 'results' && claimEvaluation && policyMetadata && claimFormData && (
+            <div className="space-y-6">
+              {/* Collapsible Claim Form */}
+              <ClaimForm 
+                policyMetadata={policyMetadata}
+                onClaimSubmitted={handleClaimSubmitted}
+                isLoading={isLoading}
+                setIsLoading={setIsLoading}
+                isCollapsed={isFormCollapsed}
+                isReadOnly={!isFormEditable}
+                onToggleCollapse={handleToggleForm}
+                onEdit={handleEditForm}
+                initialFormData={claimFormData}
+              />
+              
+              {/* Evaluation Results */}
+              <EvaluationResults 
+                evaluation={claimEvaluation}
+                policyMetadata={policyMetadata}
+                onStartOver={handleStartOver}
+                onEditClaim={handleEditForm}
+              />
+            </div>
           )}
         </div>
 

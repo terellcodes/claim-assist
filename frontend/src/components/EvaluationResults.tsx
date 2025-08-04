@@ -7,9 +7,10 @@ interface EvaluationResultsProps {
   evaluation: ClaimEvaluation
   policyMetadata: PolicyMetadata | null
   onStartOver: () => void
+  onEditClaim?: () => void
 }
 
-export default function EvaluationResults({ evaluation, policyMetadata, onStartOver }: EvaluationResultsProps) {
+export default function EvaluationResults({ evaluation, policyMetadata, onStartOver, onEditClaim }: EvaluationResultsProps) {
   const [copiedEmail, setCopiedEmail] = useState(false)
   const [copiedEvaluation, setCopiedEvaluation] = useState(false)
 
@@ -175,6 +176,15 @@ export default function EvaluationResults({ evaluation, policyMetadata, onStartO
       {/* Actions */}
       <div className="bg-white rounded-lg shadow-lg p-8">
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
+          {onEditClaim && (
+            <button
+              onClick={onEditClaim}
+              className="px-6 py-3 bg-orange-600 hover:bg-orange-700 text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2"
+            >
+              Edit Claim Details
+            </button>
+          )}
+          
           <button
             onClick={onStartOver}
             className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2"

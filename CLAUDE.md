@@ -10,6 +10,7 @@ ClaimAssist is a full-stack application with separate API and frontend services:
 - Only commit changes when I tell you to.
 - Just because I tell you to commit changes once that does not mean you can freely start doing so for future changes
 - if you start the frontend and api for testing please kill them when you hand control back to me
+- update CHANGELOG.md file whenever I make a commit
 
 ### API (FastAPI Backend)
 - **Location**: `api/` directory
@@ -123,3 +124,6 @@ uv add langchain langgraph langchain-community langsmith
 - LangGraph is particularly useful for building stateful, multi-step AI workflows
 - Use LangSmith for tracing and monitoring AI operations in production
 - Consider using LangChain's async APIs for better performance in FastAPI
+
+### User Experience
+- For any component that is rendering an LLM or Agent response ensure it supports Markdown Rendering
