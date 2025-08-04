@@ -171,5 +171,13 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         }
 
 
-# Global instance
-claim_consultant = SimpleClaimConsultant()
+# Global instance - lazy initialization to avoid API key issues at import time
+_claim_consultant = None
+
+
+def get_claim_consultant() -> SimpleClaimConsultant:
+    """Get the global claim consultant instance (lazy initialization)."""
+    global _claim_consultant
+    if _claim_consultant is None:
+        _claim_consultant = SimpleClaimConsultant()
+    return _claim_consultant

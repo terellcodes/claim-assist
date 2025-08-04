@@ -5,7 +5,7 @@ Simple service for handling claim submissions and evaluations.
 """
 
 from typing import Dict, Any
-from services.agents.claim_consultant import claim_consultant
+from services.agents.claim_consultant import get_claim_consultant
 from services.policy_service import policy_service
 from models.schemas.claim import ClaimRequest, ClaimResponse
 
@@ -14,7 +14,15 @@ class ClaimService:
     """Simple service for claim operations."""
     
     def __init__(self):
-        self.agent = claim_consultant
+        # Use lazy initialization - agent will be created when first needed
+        self._agent = None
+    
+    @property
+    def agent(self):
+        """Lazy initialization of the claim consultant agent."""
+        if self._agent is None:
+            self._agent = get_claim_consultant()
+        return self._agent
     
     async def submit_claim(self, claim_request: ClaimRequest) -> ClaimResponse:
         """

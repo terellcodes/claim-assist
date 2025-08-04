@@ -17,7 +17,7 @@ class PolicyUploadResponse(BaseResponse):
     policy_number: str = Field(..., description="Policy number")
     date_issued: str = Field(..., description="Policy issue date")
     total_pages: int = Field(..., description="Number of pages processed")
-    summary: str = Field(..., description="Brief policy summary")
+    summary: Optional[str] = Field(None, description="Brief policy summary")
 
 
 class PolicyMetadata(BaseModel):
