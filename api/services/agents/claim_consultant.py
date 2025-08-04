@@ -87,11 +87,12 @@ class SimpleClaimConsultant:
             # Tavily API key not available - continue without web search
             self.tavily_tool = None
         
-        # LLM with tools
-        self.llm_with_tools = self.llm.bind_tools(self.tools)
+        # LLM with tools (will be set when agent is built)
+        self.llm_with_tools = None
         
-        # Build graph
-        self.agent = self._build_agent()
+        # Agent and current policy tracking (lazy initialization)
+        self.agent = None
+        self._current_policy_id = None
     
     def _get_system_prompt(self) -> str:
         """System prompt for the claim consultant (simplified from notebook)."""
@@ -320,8 +321,10 @@ Always ground your decision in the uploaded policy first, and be concise, helpfu
         """
         import json
         
-        # Add RAG tool for this policy
-        self.add_rag_tool(policy_id)
+        # Build agent if not built yet or if policy changed
+        if self.agent is None or self._current_policy_id != policy_id:
+            self.add_rag_tool(policy_id)
+            self._current_policy_id = policy_id
         
         # Run agent
         input_data = {
