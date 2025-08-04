@@ -124,7 +124,7 @@ Your job is to evaluate whether a user's insurance claim is valid, based on the 
 ```json
 {{
   "is_valid": true/false,
-  "evaluation": "Detailed explanation of your analysis and reasoning",
+  "evaluation": "Detailed explanation of your analysis and reasoning. Use bullet points.",
   "citations": "List of citations from the policy that support your analysis",
   "email_draft": "Professional email to send to insurance company (only if is_valid is true)",
   "suggestions": "Actionable suggestions for the user (especially if is_valid is false)"
