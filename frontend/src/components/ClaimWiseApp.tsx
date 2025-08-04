@@ -72,6 +72,11 @@ export default function ClaimWiseApp() {
   const handleEditForm = () => {
     setIsFormEditable(true)
     setIsFormCollapsed(false)
+    
+    // Scroll to the top of the page to show the form
+    setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }, 100)
   }
 
   return (

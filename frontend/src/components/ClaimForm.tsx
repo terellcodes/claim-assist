@@ -268,7 +268,12 @@ export default function ClaimForm({
             onChange={handleInputChange}
             required
             rows={6}
-            className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900 placeholder-gray-500"
+            className={`w-full px-3 py-2 border rounded-md focus:outline-none text-gray-900 placeholder-gray-500 ${
+              isReadOnly 
+                ? 'border-gray-200 bg-gray-50 cursor-not-allowed' 
+                : 'border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+            }`}
+            readOnly={isReadOnly}
             placeholder="Describe what happened in detail. Include information about the cause, extent of damage, any immediate actions taken, evidence available (photos, witnesses), and any other relevant details that might help evaluate your claim."
           />
           <p className="text-sm text-gray-500 mt-1">
