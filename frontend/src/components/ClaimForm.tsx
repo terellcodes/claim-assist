@@ -183,20 +183,9 @@ export default function ClaimForm({
         </div>
       </div>
 
-      {/* Retrieval Strategy Selector - only show when not read-only */}
-      {!isReadOnly && (
-        <div className="border-t border-gray-200 pt-6">
-          <RetrievalStrategySelector
-            selectedStrategy={formData.retrieval_strategy}
-            onStrategyChange={handleStrategyChange}
-            disabled={isLoading}
-          />
-        </div>
-      )}
-
-      <form onSubmit={handleSubmit} className="space-y-6">
+      <form onSubmit={handleSubmit} className="space-y-8">
         {/* Policy Holder Name */}
-        <div>
+        <div className="mt-8">
           <label htmlFor="policy_holder_name" className="block text-sm font-medium text-gray-700 mb-2">
             Policy Holder Name *
           </label>
@@ -218,7 +207,7 @@ export default function ClaimForm({
         </div>
 
         {/* Incident Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
           <div>
             <label htmlFor="incident_date" className="block text-sm font-medium text-gray-700 mb-2">
               Incident Date *
@@ -260,7 +249,7 @@ export default function ClaimForm({
         </div>
 
         {/* Location */}
-        <div>
+        <div className="mt-8">
           <label htmlFor="location" className="block text-sm font-medium text-gray-700 mb-2">
             Location of Incident *
           </label>
@@ -308,6 +297,17 @@ export default function ClaimForm({
             )}
           </p>
         </div>
+
+        {/* Retrieval Strategy Selector - only show when not read-only */}
+        {!isReadOnly && (
+          <div className="border-t border-gray-200 pt-8">
+            <RetrievalStrategySelector
+              selectedStrategy={formData.retrieval_strategy}
+              onStrategyChange={handleStrategyChange}
+              disabled={isLoading}
+            />
+          </div>
+        )}
 
         {/* Error Message */}
         {error && (

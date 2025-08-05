@@ -5,7 +5,7 @@ Simple service for handling claim submissions and evaluations.
 """
 
 from typing import Dict, Any
-from services.agents.claim_consultant import get_claim_consultant, SimpleClaimConsultant
+from services.agents.claim_consultant import get_claim_consultant, ClaimConsultantAgent
 from services.policy_service import policy_service
 from models.schemas.claim import ClaimRequest, ClaimResponse
 
@@ -24,7 +24,7 @@ class ClaimService:
             self._default_agent = get_claim_consultant()
         return self._default_agent
     
-    def get_agent_for_strategy(self, strategy: str) -> SimpleClaimConsultant:
+    def get_agent_for_strategy(self, strategy: str) -> ClaimConsultantAgent:
         """Get agent instance for specific retrieval strategy."""
         print(f"🤖 ClaimService: Getting agent for '{strategy}' strategy")
         
@@ -35,7 +35,7 @@ class ClaimService:
         else:
             # Create new agent instance for advanced strategies
             print(f"   🆕 Creating new agent instance for advanced strategy")
-            return SimpleClaimConsultant(retrieval_strategy=strategy)
+            return ClaimConsultantAgent(retrieval_strategy=strategy)
     
     async def submit_claim(self, claim_request: ClaimRequest) -> ClaimResponse:
         """

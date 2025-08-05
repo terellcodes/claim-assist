@@ -8,6 +8,7 @@ All notable changes to ClaimAssist will be documented in this file.
 - **Claim Editing UX**: Edit button now smoothly scrolls to claim form for better user experience
 - **Form Validation**: Fixed textarea readonly state and styling consistency in ClaimForm component
 - **Resubmission Flow**: Enabled claim resubmission after editing with proper form validation
+- **Agent Architecture**: Renamed SimpleClaimConsultant to ClaimConsultantAgent for better naming consistency
 
 ### Added
 - **Policy Citations**: Added support for AI agent to provide specific policy references supporting analysis
