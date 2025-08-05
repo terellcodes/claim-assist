@@ -2,6 +2,13 @@
 
 > **AI-Powered Insurance Claim Evaluation & Professional Email Drafting**
 
+## 📋 Documentation & Demo
+
+- **📄 [Certification Challenge Writeup](./Certification%20Challenge%20Writeup.pdf)** - Complete technical analysis and evaluation results
+- **🎥 [Live Demo Video](https://www.loom.com/share/5b0a18237f14415bac3949a47c88f8ca)** - See ClaimAssist in action
+
+---
+
 ClaimAssist is an intelligent insurance claim processing application that combines AI-powered policy analysis with professional claim drafting. Upload your insurance policy, describe your claim situation, and receive an expert evaluation with a professionally drafted email ready to send to your insurance company.
 
 ## 🚀 Features
